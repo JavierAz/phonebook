@@ -7,8 +7,10 @@ package phonebook;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import phonebook.db.Conection;
 
 /**
@@ -16,30 +18,56 @@ import phonebook.db.Conection;
  * @author javier
  */
 public class Vista extends javax.swing.JFrame {
-    
+
     public static final String servidor = "localhost";
     public static final String database = "escuela";
     public static final String usuario = "escuela";
     public static final String password = "P@ssw0rd";
     PreparedStatement st;
     ResultSet rs;
-    
-    private void clear(){
+
+    private void clear() {
         txtboleta.setText(null);
         txtNombre.setText(null);
         txtApellido1.setText(null);
         txtApellido2.setText(null);
     }
-    
+
     public Vista() {
-        initComponents();   
-        
-        try{
-            Conection conn =  new Conection(servidor, database, usuario, password);    
-        }catch(Exception e){
+        initComponents();
+
+        try {
+            DefaultTableModel modelo = new DefaultTableModel();
+            tblShow.setModel(modelo);
+            Conection conn = new Conection(servidor, database, usuario, password);
+            st = null;
+            rs = null;
+
+            String sql = "SELECT boleta, nombre, apellido_paterno, apellido_materno FROM estudiantes";
+            st = conn.getConexion().prepareStatement(sql);
+            rs = st.executeQuery();
+
+            ResultSetMetaData rsMd = rs.getMetaData();
+            int cantidadColumnas = rsMd.getColumnCount();
+            
+            modelo.addColumn("Boleta");
+            modelo.addColumn("Nombre");
+            modelo.addColumn("Primer Apellido");
+            modelo.addColumn("Segundo Apellido");
+
+            while (rs.next()) {
+                Object[] filas = new Object[cantidadColumnas];
+                for (int i = 0; i < cantidadColumnas; i++) {
+                    filas[i] = rs.getObject(i + 1);
+                }
+                
+                modelo.addRow(filas);
+            }
+
+        } catch (Exception e) {
             System.out.println("error de conecition" + e);
         }
-        
+
     }
 
     /**
@@ -187,100 +215,170 @@ public class Vista extends javax.swing.JFrame {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
         //JOptionPane.showMessageDialog(null, "");
-        
+
         //Conection con = null;
-        try{
-            Conection conn =  new Conection(servidor, database, usuario, password);
+        try {
+            Conection conn = new Conection(servidor, database, usuario, password);
             System.out.println("aqui entro");
-            st =  conn.getConexion().prepareStatement("INSERT INTO estudiantes ( boleta, nombre, apellido_paterno, apellido_materno) value (?, ?, ?, ?)");
+            st = conn.getConexion().prepareStatement("INSERT INTO estudiantes ( boleta, nombre, apellido_paterno, apellido_materno) value (?, ?, ?, ?)");
             st.setString(1, txtboleta.getText());
             st.setString(2, txtNombre.getText());
             st.setString(3, txtApellido1.getText());
             st.setString(4, txtApellido2.getText());
-            
+
             int res = st.executeUpdate();
-            if(res > 0){
-                JOptionPane.showMessageDialog(null, "se agrego");
+            
+            DefaultTableModel modelo = new DefaultTableModel();
+            tblShow.setModel(modelo);
+            String sql = "SELECT boleta, nombre, apellido_paterno, apellido_materno FROM estudiantes";
+            st = conn.getConexion().prepareStatement(sql);
+            rs = st.executeQuery();
+
+            ResultSetMetaData rsMd = rs.getMetaData();
+            int cantidadColumnas = rsMd.getColumnCount();
+            
+            modelo.addColumn("Boleta");
+            modelo.addColumn("Nombre");
+            modelo.addColumn("Primer Apellido");
+            modelo.addColumn("Segundo Apellido");
+
+            while (rs.next()) {
+                Object[] filas = new Object[cantidadColumnas];
+                for (int i = 0; i < cantidadColumnas; i++) {
+                    filas[i] = rs.getObject(i + 1);
+                }
+                
+                modelo.addRow(filas);
+            }
+                      
+            if (res > 0) {
+                //JOptionPane.showMessageDialog(null, "se agrego");
                 clear();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "no se agrego");
                 clear();
             }
-            
+
             conn.cerrarConexion();
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             System.out.println(e);
         }
-        
+
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        try{
-            Conection conn =  new Conection(servidor, database, usuario, password);
+        try {
+            Conection conn = new Conection(servidor, database, usuario, password);
             System.out.println("aqui entro");
-            st =  conn.getConexion().prepareStatement("DELETE FROM estudiantes WHERE id=?");
+            st = conn.getConexion().prepareStatement("DELETE FROM estudiantes WHERE id=?");
             st.setInt(1, Integer.parseInt(txtId.getText()));
-            
+
             int res = st.executeUpdate();
-            if(res > 0){
-                JOptionPane.showMessageDialog(null, "se elimino");
+            
+            DefaultTableModel modelo = new DefaultTableModel();
+            tblShow.setModel(modelo);
+            String sql = "SELECT boleta, nombre, apellido_paterno, apellido_materno FROM estudiantes";
+            st = conn.getConexion().prepareStatement(sql);
+            rs = st.executeQuery();
+
+            ResultSetMetaData rsMd = rs.getMetaData();
+            int cantidadColumnas = rsMd.getColumnCount();
+            
+            modelo.addColumn("Boleta");
+            modelo.addColumn("Nombre");
+            modelo.addColumn("Primer Apellido");
+            modelo.addColumn("Segundo Apellido");
+
+            while (rs.next()) {
+                Object[] filas = new Object[cantidadColumnas];
+                for (int i = 0; i < cantidadColumnas; i++) {
+                    filas[i] = rs.getObject(i + 1);
+                }
+                
+                modelo.addRow(filas);
+            }
+            
+            if (res > 0) {
+                //JOptionPane.showMessageDialog(null, "se elimino");
                 clear();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "no se elimino");
                 clear();
             }
-            
+
             conn.cerrarConexion();
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             System.out.println(e);
-        } 
+        }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
         // TODO add your handling code here:
-        try{
-            Conection conn =  new Conection(servidor, database, usuario, password);
+        try {
+            Conection conn = new Conection(servidor, database, usuario, password);
             System.out.println("aqui entro");
-            st =  conn.getConexion().prepareStatement("UPDATE estudiantes SET boleta=?, nombre=?, apellido_paterno=?, apellido_materno=? WHERE id=?");
+            st = conn.getConexion().prepareStatement("UPDATE estudiantes SET boleta=?, nombre=?, apellido_paterno=?, apellido_materno=? WHERE id=?");
             st.setString(1, txtboleta.getText());
             st.setString(2, txtNombre.getText());
             st.setString(3, txtApellido1.getText());
             st.setString(4, txtApellido2.getText());
             st.setString(5, txtId.getText());
-            
+
             int res = st.executeUpdate();
-            if(res > 0){
-                JOptionPane.showMessageDialog(null, "se modifico");
+            DefaultTableModel modelo = new DefaultTableModel();
+            tblShow.setModel(modelo);
+            String sql = "SELECT boleta, nombre, apellido_paterno, apellido_materno FROM estudiantes";
+            st = conn.getConexion().prepareStatement(sql);
+            rs = st.executeQuery();
+
+            ResultSetMetaData rsMd = rs.getMetaData();
+            int cantidadColumnas = rsMd.getColumnCount();
+            
+            modelo.addColumn("Boleta");
+            modelo.addColumn("Nombre");
+            modelo.addColumn("Primer Apellido");
+            modelo.addColumn("Segundo Apellido");
+
+            while (rs.next()) {
+                Object[] filas = new Object[cantidadColumnas];
+                for (int i = 0; i < cantidadColumnas; i++) {
+                    filas[i] = rs.getObject(i + 1);
+                }
+                
+                modelo.addRow(filas);
+            }
+            if (res > 0) {
+                //JOptionPane.showMessageDialog(null, "se modifico");
                 clear();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "no se modifico");
                 clear();
             }
-            
+
             conn.cerrarConexion();
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             System.out.println(e);
-        }    
-        
+        }
+
     }//GEN-LAST:event_btnChangeActionPerformed
 
-    public void showStudents() throws SQLException{    
+    public void showStudents() throws SQLException {
         //dbHelper aux;
-        Conection conn =  new Conection(servidor, database, usuario, password);
-               
+        Conection conn = new Conection(servidor, database, usuario, password);
+
         PreparedStatement st = conn.getConexion().prepareStatement("SELECT * FROM estudiantes");
         ResultSet rs = st.executeQuery();
-        while(rs.next()){
+        while (rs.next()) {
             System.out.println("id = " + rs.getLong("id"));
             //System.out.println("nombre = " + rs.getString("nombre"));
         }
- 
+
     }
-    
+
     /**
      * @param args the command line arguments
      */
