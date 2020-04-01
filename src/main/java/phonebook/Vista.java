@@ -217,7 +217,26 @@ public class Vista extends javax.swing.JFrame {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        
+        try{
+            Conection conn =  new Conection(servidor, database, usuario, password);
+            System.out.println("aqui entro");
+            st =  conn.getConexion().prepareStatement("DELETE FROM estudiantes WHERE id=?");
+            st.setInt(1, Integer.parseInt(txtId.getText()));
+            
+            int res = st.executeUpdate();
+            if(res > 0){
+                JOptionPane.showMessageDialog(null, "se elimino");
+                clear();
+            }else{
+                JOptionPane.showMessageDialog(null, "no se elimino");
+                clear();
+            }
+            
+            conn.cerrarConexion();
+            
+        }catch(Exception e){
+            System.out.println(e);
+        } 
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
