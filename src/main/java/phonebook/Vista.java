@@ -287,13 +287,16 @@ public class Vista extends javax.swing.JFrame {
         modelo.addColumn("Primer Apellido");
         modelo.addColumn("Segundo Apellido");
         modelo.addColumn("id");
-
+        
         for (Object[] row : rows) {
             modelo.addRow(row);
-        }
-
+        }        
+        
+        tblShow.getColumnModel().getColumn(4).setMaxWidth(0);
+        tblShow.getColumnModel().getColumn(4).setMinWidth(0);
+        tblShow.getColumnModel().getColumn(4).setPreferredWidth(0);
     }
-
+        
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnChange;
