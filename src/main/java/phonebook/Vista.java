@@ -4,9 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import phonebook.db.Conection;
+import phonebook.db.ConnectionSource;
 
 /**
  *
@@ -20,16 +25,10 @@ public class Vista extends javax.swing.JFrame {
     public static final String password = "P@ssw0rd";
     PreparedStatement st;
     ResultSet rs;
+    private DbHelper dbHelper;
 
-    private void clear() {
-        txtboleta.setText(null);
-        txtNombre.setText(null);
-        txtApellido1.setText(null);
-        txtApellido2.setText(null);
-        txtId.setText(null);
-    }
-
-    public Vista() {
+    Vista(DbHelper dbHelper) {
+        this.dbHelper = dbHelper;
         initComponents();
 
         try {
@@ -37,7 +36,14 @@ public class Vista extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("error de conecition" + e);
         }
+    }
 
+    private void clear() {
+        txtboleta.setText(null);
+        txtNombre.setText(null);
+        txtApellido1.setText(null);
+        txtApellido2.setText(null);
+        txtId.setText(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -108,9 +114,11 @@ public class Vista extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tblShow.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblSelect(evt);
+        tblShow.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblShow.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            @Override
+            public void valueChanged(ListSelectionEvent lse) {
+                showUser();
             }
         });
         jScrollPane2.setViewportView(tblShow);
@@ -198,163 +206,92 @@ public class Vista extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        //JOptionPane.showMessageDialog(null, "");
-
-        //Conection con = null;
-        try {
-            Conection conn = new Conection(servidor, database, usuario, password);
-            st = conn.getConexion().prepareStatement("INSERT INTO estudiantes ( boleta, nombre, apellido_paterno, apellido_materno) value (?, ?, ?, ?)");
-            st.setString(1, txtboleta.getText());
-            st.setString(2, txtNombre.getText());
-            st.setString(3, txtApellido1.getText());
-            st.setString(4, txtApellido2.getText());
-
-            int res = st.executeUpdate();
-            
-            showStudents();
-            
-            if (res > 0) {
-                //JOptionPane.showMessageDialog(null, "se agrego");
-                clear();
-            } else {
-                JOptionPane.showMessageDialog(null, "no se agrego");
-                clear();
-            }
-
-            conn.cerrarConexion();
-
-        } catch (Exception e) {
-            System.out.println(e);
+        String boleta = txtboleta.getText();
+        String nombre = txtNombre.getText();
+        String apellido_paterno = txtApellido1.getText();
+        String apellido_materno = txtApellido2.getText();
+        
+        int ress = dbHelper.insert(boleta, nombre, apellido_paterno, apellido_materno);
+        
+        showStudents();
+        
+        if(ress > 0){
+            clear();
+        } else {
+            JOptionPane.showMessageDialog(null, "no se agrego");
         }
-
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        try {
-            Conection conn = new Conection(servidor, database, usuario, password);
-            System.out.println("aqui entro");
-            st = conn.getConexion().prepareStatement("DELETE FROM estudiantes WHERE boleta=?");
-            st.setString(1, txtboleta.getText());
-//            st = conn.getConexion().prepareStatement("DELETE FROM estudiantes WHERE id=?");
-//            st.setInt(1, Integer.parseInt(txtId.getText()));
+        String boleta = txtboleta.getText();
+        int res = dbHelper.delete(boleta);
 
-            int res = st.executeUpdate();
-            
-            showStudents();
-            
-            if (res > 0) {
-                //JOptionPane.showMessageDialog(null, "se elimino");
-                clear();
-            } else {
-                JOptionPane.showMessageDialog(null, "no se elimino");
-                clear();
-            }
+        showStudents();
 
-            conn.cerrarConexion();
-
-        } catch (Exception e) {
-            System.out.println(e);
+        if (res > 0) {
+            //JOptionPane.showMessageDialog(null, "se elimino");
+            clear();
+        } else {
+            JOptionPane.showMessageDialog(null, "no se elimino");
+            clear();
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
         // TODO add your handling code here:
-        try {
-            Conection conn = new Conection(servidor, database, usuario, password);
-            st = conn.getConexion().prepareStatement("UPDATE estudiantes SET boleta=?, nombre=?, apellido_paterno=?, apellido_materno=? WHERE id=?");
-            //st = conn.getConexion().prepareStatement("UPDATE estudiantes SET boleta=?, nombre=?, apellido_paterno=?, apellido_materno=? WHERE id=?");
-            st.setString(1, txtboleta.getText());
-            st.setString(2, txtNombre.getText());
-            st.setString(3, txtApellido1.getText());
-            st.setString(4, txtApellido2.getText());
-            st.setString(5, txtId.getText());
-
-            int res = st.executeUpdate();
-            
-            showStudents();
-            
-            if (res > 0) {
-                //JOptionPane.showMessageDialog(null, "se modifico");
-                clear();
-            } else {
-                JOptionPane.showMessageDialog(null, "no se modifico");
-                clear();
-            }
-
-            conn.cerrarConexion();
-
-        } catch (Exception e) {
-            System.out.println(e);
+        String boleta = txtboleta.getText();
+        String nombre = txtNombre.getText();
+        String apellido_paterno = txtApellido1.getText();
+        String apellido_materno = txtApellido2.getText();
+        int id = Integer.parseInt(txtId.getText());
+        
+        int res = dbHelper.update(boleta, nombre, apellido_paterno, apellido_materno, id);
+        
+        showStudents();
+        
+        if (res > 0) {
+            //JOptionPane.showMessageDialog(null, "se modifico");
+            clear();
+        } else {
+            JOptionPane.showMessageDialog(null, "no se modifico");
+            clear();
         }
-
     }//GEN-LAST:event_btnChangeActionPerformed
 
-    private void tblSelect(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSelect
+    private void showUser() {
         // TODO add your handling code here:
-        st = null;
-        rs = null;
-        try{
-            Conection conn = new Conection(servidor, database, usuario, password);
-            
-            int fila = tblShow.getSelectedRow();
+        int fila = tblShow.getSelectedRow();
+        //checar que haya una fila seleccionada
+        if (fila != -1) {
             String boleta = tblShow.getValueAt(fila, 0).toString();
-            
-            st = conn.getConexion().prepareStatement("SELECT id, boleta, nombre, apellido_paterno, apellido_materno FROM estudiantes WHERE boleta=?");
-            st.setString(1, boleta);
-            rs = st.executeQuery();
-             while (rs.next()) {
-                txtboleta.setText(rs.getString("boleta"));
-                txtNombre.setText(rs.getString("nombre"));
-                txtApellido1.setText(rs.getString("apellido_paterno"));
-                txtApellido2.setText(rs.getString("apellido_materno"));
-                txtId.setText(rs.getString("id"));
-            }
-            
-        }catch(SQLException e){
-            System.out.println(e.toString());
+            String nombre = tblShow.getValueAt(fila, 1).toString();
+            String apellidoPaterno = tblShow.getValueAt(fila, 2).toString();
+            String apellidoMaterno = tblShow.getValueAt(fila, 3).toString();
+            String id = tblShow.getValueAt(fila, 4).toString();
+            txtboleta.setText(boleta);
+            txtNombre.setText(nombre);
+            txtApellido1.setText(apellidoPaterno);
+            txtApellido2.setText(apellidoMaterno);
+            txtId.setText(id);
         }
-    }//GEN-LAST:event_tblSelect
-
-    public void showStudents() throws SQLException {
-        //dbHelper aux;
-        DefaultTableModel modelo = new DefaultTableModel();
-            tblShow.setModel(modelo);
-            Conection conn = new Conection(servidor, database, usuario, password);
-            st = null;
-            rs = null;
-
-            String sql = "SELECT boleta, nombre, apellido_paterno, apellido_materno FROM estudiantes";
-            st = conn.getConexion().prepareStatement(sql);
-            rs = st.executeQuery();
-
-            ResultSetMetaData rsMd = rs.getMetaData();
-            int cantidadColumnas = rsMd.getColumnCount();
-            
-            modelo.addColumn("Boleta");
-            modelo.addColumn("Nombre");
-            modelo.addColumn("Primer Apellido");
-            modelo.addColumn("Segundo Apellido");
-
-            while (rs.next()) {
-                Object[] filas = new Object[cantidadColumnas];
-                for (int i = 0; i < cantidadColumnas; i++) {
-                    filas[i] = rs.getObject(i + 1);
-                }
-                
-                modelo.addRow(filas);
-            }
-
     }
 
-    public static void main(String args[]) {
-        
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Vista().setVisible(true);
-            }
-        });
+    public void showStudents() {
+        DefaultTableModel modelo = new DefaultTableModel();
+        tblShow.setModel(modelo);
+        List<Object[]> rows = dbHelper.select();
+
+        modelo.addColumn("Boleta");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Primer Apellido");
+        modelo.addColumn("Segundo Apellido");
+        modelo.addColumn("id");
+
+        for (Object[] row : rows) {
+            modelo.addRow(row);
+        }
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
