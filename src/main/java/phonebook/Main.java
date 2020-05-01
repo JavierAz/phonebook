@@ -5,11 +5,13 @@
  */
 package phonebook;
 
+import phonebook.db.StudentsDao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import phonebook.db.ConnectionSource;
+import phonebook.db.TeachersDao;
 
 /**
  *
@@ -27,19 +29,13 @@ public class Main {
         String usuario = "escuela";
         String password = "P@ssw0rd";
         ConnectionSource conn =  new ConnectionSource(servidor, database, usuario, password);
-        DbHelper dbHelper = new DbHelper(conn);
-        
-//        PreparedStatement st = conn.getConexion().prepareStatement("SELECT * FROM estudiantes");
-//        ResultSet rs = st.executeQuery();
-//        while(rs.next()){
-//            System.out.println("id = " + rs.getLong("id"));
-//            System.out.println("nombre = " + rs.getString("nombre"));   
-//        }
+        StudentsDao dbHelper = new StudentsDao(conn);
+        TeachersDao dao = new TeachersDao(conn);
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Vista(dbHelper).setVisible(true);
+                new LoginFrm(dao, dbHelper).setVisible(true);
             }
         });
     }

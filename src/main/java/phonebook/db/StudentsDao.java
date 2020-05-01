@@ -1,9 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package phonebook;
+package phonebook.db;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,18 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.table.DefaultTableModel;
-import static phonebook.Vista.database;
-import static phonebook.Vista.password;
-import static phonebook.Vista.servidor;
-import static phonebook.Vista.usuario;
-import phonebook.db.ConnectionSource;
+import phonebook.MainFrm;
 
 /**
  *
  * @author javier
  */
-public class DbHelper {
+public class StudentsDao {
 
     private String selectQuery = "SELECT boleta, nombre, apellido_paterno, apellido_materno, id FROM estudiantes";
     private String deleteQuery = "DELETE FROM estudiantes WHERE boleta = ?";
@@ -34,7 +24,7 @@ public class DbHelper {
     private String createQuery = "INSERT INTO estudiantes ( boleta, nombre, apellido_paterno, apellido_materno) value (?, ?, ?, ?)";
     private ConnectionSource conFactory = null;
 
-    public DbHelper(ConnectionSource conn) throws SQLException {
+    public StudentsDao(ConnectionSource conn) throws SQLException {
         this.conFactory = conn;
     }
 
@@ -103,7 +93,7 @@ public class DbHelper {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(Vista.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainFrm.class.getName()).log(Level.SEVERE, null, ex);
         }
         return li;
     }

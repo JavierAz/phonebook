@@ -1,5 +1,6 @@
 package phonebook;
 
+import phonebook.db.StudentsDao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -17,17 +18,11 @@ import phonebook.db.ConnectionSource;
  *
  * @author javier
  */
-public class Vista extends javax.swing.JFrame {
+public class MainFrm extends javax.swing.JFrame {
 
-    public static final String servidor = "localhost";
-    public static final String database = "escuela";
-    public static final String usuario = "escuela";
-    public static final String password = "P@ssw0rd";
-    PreparedStatement st;
-    ResultSet rs;
-    private DbHelper dbHelper;
+    private StudentsDao dbHelper;
 
-    Vista(DbHelper dbHelper) {
+    MainFrm(StudentsDao dbHelper) {
         this.dbHelper = dbHelper;
         initComponents();
 
@@ -277,7 +272,7 @@ public class Vista extends javax.swing.JFrame {
         }
     }
 
-    public void showStudents() {
+    public final void showStudents() {
         DefaultTableModel modelo = new DefaultTableModel();
         tblShow.setModel(modelo);
         List<Object[]> rows = dbHelper.select();
