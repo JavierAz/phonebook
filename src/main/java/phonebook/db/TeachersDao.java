@@ -19,16 +19,19 @@ public class TeachersDao {
         this.conFactory = conn;
     }
     
-    public int insert(String user, String pwd){
+    public int insert(String user, String password, String name, String apellido1, String apellido2){
         int res = 0;
         try(Connection conn = conFactory.openConnection()){
             try(PreparedStatement createST = conn.prepareStatement(addQry)){
                 createST.setString(1, user);
-                createST.setString(2, pwd);
+                createST.setString(2, password);
+                createST.setString(3, name);
+                createST.setString(4, apellido1);
+                createST.setString(5, apellido2);
                 res = createST.executeUpdate();
             }
         }catch(SQLException e){
-            System.out.println(e);
+            System.out.println("error en insert " + e);
         }
         return res;
     }

@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import phonebook.db.ConnectionSource;
+import phonebook.db.DaoFacade;
 import phonebook.db.TeachersDao;
 
 /**
@@ -29,13 +30,12 @@ public class Main {
         String usuario = "escuela";
         String password = "P@ssw0rd";
         ConnectionSource conn =  new ConnectionSource(servidor, database, usuario, password);
-        StudentsDao dbHelper = new StudentsDao(conn);
-        TeachersDao dao = new TeachersDao(conn);
+        DaoFacade daoFacade = new DaoFacade(conn);
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new LoginFrm(dao, dbHelper).setVisible(true);
+                new LoginFrm(daoFacade).setVisible(true);
             }
         });
     }

@@ -1,18 +1,11 @@
 package phonebook;
 
-import phonebook.db.StudentsDao;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import phonebook.db.ConnectionSource;
+import phonebook.db.DaoFacade;
 
 /**
  *
@@ -20,10 +13,10 @@ import phonebook.db.ConnectionSource;
  */
 public class MainFrm extends javax.swing.JFrame {
 
-    private StudentsDao dbHelper;
+    private DaoFacade daoFacade;
 
-    MainFrm(StudentsDao dbHelper) {
-        this.dbHelper = dbHelper;
+    MainFrm(DaoFacade daoFacade) {
+        this.daoFacade = daoFacade;
         initComponents();
 
         try {
@@ -206,7 +199,7 @@ public class MainFrm extends javax.swing.JFrame {
         String apellido_paterno = txtApellido1.getText();
         String apellido_materno = txtApellido2.getText();
         
-        int ress = dbHelper.insert(boleta, nombre, apellido_paterno, apellido_materno);
+        int ress = daoFacade.getStudentsDao().insert(boleta, nombre, apellido_paterno, apellido_materno);
         
         showStudents();
         
@@ -220,7 +213,7 @@ public class MainFrm extends javax.swing.JFrame {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
         String boleta = txtboleta.getText();
-        int res = dbHelper.delete(boleta);
+        int res = daoFacade.getStudentsDao().delete(boleta);
 
         showStudents();
 
@@ -241,7 +234,7 @@ public class MainFrm extends javax.swing.JFrame {
         String apellido_materno = txtApellido2.getText();
         int id = Integer.parseInt(txtId.getText());
         
-        int res = dbHelper.update(boleta, nombre, apellido_paterno, apellido_materno, id);
+        int res = daoFacade.getStudentsDao().update(boleta, nombre, apellido_paterno, apellido_materno, id);
         
         showStudents();
         
@@ -275,7 +268,7 @@ public class MainFrm extends javax.swing.JFrame {
     public final void showStudents() {
         DefaultTableModel modelo = new DefaultTableModel();
         tblShow.setModel(modelo);
-        List<Object[]> rows = dbHelper.select();
+        List<Object[]> rows = daoFacade.getStudentsDao().select();
 
         modelo.addColumn("Boleta");
         modelo.addColumn("Nombre");

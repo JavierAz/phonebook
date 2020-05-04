@@ -1,8 +1,7 @@
 package phonebook;
 
 import javax.swing.JOptionPane;
-import phonebook.db.StudentsDao;
-import phonebook.db.TeachersDao;
+import phonebook.db.DaoFacade;
 
 /**
  *
@@ -10,12 +9,10 @@ import phonebook.db.TeachersDao;
  */
 public class LoginFrm extends javax.swing.JFrame {
     
-    private TeachersDao dao;
-    private StudentsDao dbHelper;
+    private DaoFacade daoFacade;
 
-    public LoginFrm(TeachersDao dao, StudentsDao dbHelper) {
-        this.dao = dao;
-        this.dbHelper = dbHelper;
+    public LoginFrm(DaoFacade daoFacade) {
+        this.daoFacade = daoFacade;
         initComponents();
     }
 
@@ -111,11 +108,12 @@ public class LoginFrm extends javax.swing.JFrame {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         // TODO add your handling code here:
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new RegisterFrm().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new RegisterFrm().setVisible(true);
+//            }
+//        });
+        new RegisterFrm(daoFacade).setVisible(true);
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
@@ -123,10 +121,10 @@ public class LoginFrm extends javax.swing.JFrame {
         String user = txtUser.getText();
         String password = String.valueOf(txtPassword.getPassword());
         
-        boolean res = dao.exists(user, password);
+        boolean res = daoFacade.getTeachersDao().exists(user, password);
         if(res){
             this.setVisible(false);
-            new MainFrm(dbHelper).setVisible(true);
+            new MainFrm(daoFacade).setVisible(true);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Usuario o contraseña no validos", "Login error", JOptionPane.ERROR_MESSAGE);

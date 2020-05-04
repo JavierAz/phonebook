@@ -5,6 +5,8 @@
  */
 package phonebook;
 
+import phonebook.db.DaoFacade;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
@@ -15,21 +17,10 @@ import javax.swing.JOptionPane;
  */
 public class RegisterFrm extends javax.swing.JFrame {
 
-//    public static final String servidor = "localhost";
-//    public static final String database = "escuela";
-//    public static final String usuario = "escuela";
-//    public static final String password = "P@ssw0rd";
-//    PreparedStatement st;
-//    ResultSet rs;
-//    private Dao dao;
+    private DaoFacade daoFacade;
     
-//    RegisterFrm(Dao dao) {
-//        this.dao = dao;
-//        initComponents();
-//    }
-    
-    public RegisterFrm() {
-        //this.dao = dao;
+    RegisterFrm(DaoFacade daoFacade) {
+        this.daoFacade = daoFacade;
         initComponents();
     }
     
@@ -151,37 +142,22 @@ public class RegisterFrm extends javax.swing.JFrame {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         // TODO add your handling code here:
-        
-    }//GEN-LAST:event_btnRegistrarActionPerformed
+        String user = txtUser.getText();
+        String password = txtPassword.getText();
+        String nombre = txtNombre.getText();
+        String apellido1 = txtApellido1.getText();
+        String apellido2 = txtApellido2.getText();
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RegisterFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        int res = daoFacade.getTeachersDao().insert(user, password, nombre, apellido1, apellido2);
+
+        if (res > 0){
+            JOptionPane.showMessageDialog(this, "Ahora puede ingrear al sistema.");
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "no se agrego");
+            clear();
         }
-        //</editor-fold>
-        //</editor-fold>
-    }
+    }//GEN-LAST:event_btnRegistrarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnCancelar;
